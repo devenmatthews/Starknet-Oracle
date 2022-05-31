@@ -39,10 +39,9 @@ let (caller_address) = get_caller_address()
     let (caller_address) = get_caller_address()
     let (_asset_listing_admin) = asset_listing_admin.read()
     let (_pool_admin) = pool_admin.read()
-    #let (pool_admin) = pool_admin.read()
     with_attr error_message(
             "Caller must be AssetListing or PoolAdmin. Got: {caller_address} Expected: {asset_listing_admin}."):
-        assert caller_address = _asset_listing_admin
+        assert caller_address = (_asset_listing_admin) #|| _pool_admin
     end
     return()
 end
@@ -93,6 +92,7 @@ end
 
 # TODO: Test these functions
 
+#
 @external
 func setAssetSources{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
 assets_len : felt, assets : felt*, sources_len : felt, sources: felt*):
@@ -102,8 +102,8 @@ _setAssetSources(assets_len = assets_len, assets = assets, sources_len = sources
 return()
 end
 
-#should modify to ensure is coming from PoolAdmin
-#add asset
+#Must be from AssetListing or Pool Admin
+#add asset external
 @external
 func addAsset{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
 asset : felt, source : felt):
@@ -130,6 +130,7 @@ func _setAssetSources{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_ch
 assets_len : felt, assets : felt*, sources_len : felt, sources : felt*
         ):
 
+    #ensure every asset has a source
     with_attr error_message(
             "Must be same amount of assets and sources. Got: asset_len={assets_len} and sources_len={sources_len}."):
         assert assets_len = sources_len
@@ -140,8 +141,6 @@ assets_len : felt, assets : felt*, sources_len : felt, sources : felt*
         return ()
     end
 
-
-    #how do you write to a map
     _addAsset([assets], [sources])
 
     #recursively add
