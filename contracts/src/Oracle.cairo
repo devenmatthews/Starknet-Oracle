@@ -6,20 +6,15 @@ from starkware.starknet.common.syscalls import get_caller_address
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.registers import get_fp_and_pc
 
+# --------------------------------------------------------
+#import interfaces
+# --------------------------------------------------------
+from lib.Interfaces.Interfaces import IOracle
 
-#interface
-
-@contract_interface
-namespace IOracle:
-    func getAssetPrice() -> (price : felt):
-    end
-end
 
 # --------------------------------------------------------
 # storage variables
 # --------------------------------------------------------
-
-# TODO: Test storage variables
 
 #asset listing admin
 @storage_var
@@ -41,7 +36,6 @@ end
 # --------------------------------------------------------
 
 # TODO: Test mod
-
 #add pool admin check
 func AssetListingOrPoolAdmins{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
 let (caller_address) = get_caller_address()
@@ -49,7 +43,7 @@ let (caller_address) = get_caller_address()
     let (_asset_listing_admin) = asset_listing_admin.read()
     let (_pool_admin) = pool_admin.read()
     with_attr error_message(
-            "Caller must be AssetListing or PoolAdmin. Got: {caller_address} Expected: {asset_listing_admin}."):
+            "Caller must be AssetListing or PoolAdmin."):
         assert caller_address = (_asset_listing_admin) #|| _pool_admin
     end
     return()
@@ -59,21 +53,26 @@ end
 # constructor
 # --------------------------------------------------------
 
-# TODO: Test constructor
-
-@external
-func construct{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    pool_admin_address : felt, asset_listing_admin_address : felt, assets_len : felt, assets : felt*, sources_len : felt, sources : felt*
+#Tested
+#Sets variables
+@constructor
+func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    pool_admin_address : felt,
+    asset_listing_admin_address : felt,
+    assets_len : felt,
+    assets: felt*,
+    sources_len : felt,
+    sources: felt*
 ):
-
     #write admins
     pool_admin.write(pool_admin_address)
     asset_listing_admin.write(asset_listing_admin_address)
-
     #construct price_sources
-    _setAssetSources(assets_len = assets_len, assets = assets, sources_len = sources_len, sources = sources)
-
-
+    _setAssetSources(assets_len = assets_len,
+                    assets = assets,
+                    sources_len = sources_len,
+                    sources = sources,
+                    )
     return ()
 end
 
@@ -81,31 +80,30 @@ end
 # getter methods
 # --------------------------------------------------------
 
-# TODO: Test these functions
-
-#test
-#call Oracle contract
-#returns the price of an asset
+#Tested
+#calls oracle to return price of asset
 @view
 func getAssetPrice{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr
-}(asset : felt) -> (res: felt):
-    let (source) = getAssetSource(_asset=asset)
+}(asset : felt) -> (price: felt):
+    let (source) = getAssetSource(asset=asset)
     let (price) = IOracle.getAssetPrice(
         contract_address=source
         )
     return(price)
 end
 
+#Tested
+#returns price source for a single asset
 @view
 func getAssetSource{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr
-}(_asset : felt) -> (source: felt):
-    let (source) = price_sources.read(asset=_asset)
+}(asset : felt) -> (source: felt):
+    let (source) = price_sources.read(asset=asset)
     return(source)
 end
 
@@ -114,9 +112,7 @@ end
 # external setter methods
 # --------------------------------------------------------
 
-# TODO: Test these functions
-
-#
+## TODO: Test these functions
 @external
 func setAssetSources{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
 assets_len : felt, assets : felt*, sources_len : felt, sources: felt*):
@@ -126,6 +122,7 @@ _setAssetSources(assets_len = assets_len, assets = assets, sources_len = sources
 return()
 end
 
+### TODO: Test these functions
 #Must be from AssetListing or Pool Admin
 #add asset external
 @external
@@ -143,16 +140,11 @@ end
 # internal setter methods
 # --------------------------------------------------------
 
-# TODO: Test these functions
-
-#constructor function creates key-pair values asset:price_source
-#for this tutorial price_source = price
-#input: pointer to array of assets, pointer to array of sources
-#output : *DictAccess of asset:price key-pair map
-#internal - only constructor can call
+#Tested
+#populates price_sources with key-pair values asset:price_source
 func _setAssetSources{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
 assets_len : felt, assets : felt*, sources_len : felt, sources : felt*
-        ):
+):
 
     #ensure every asset has a source
     with_attr error_message(
@@ -177,6 +169,8 @@ assets_len : felt, assets : felt*, sources_len : felt, sources : felt*
 
 end
 
+#Tested
+#adds single asset to price_sources
 func _addAsset{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
 asset : felt, source : felt):
     #how do you write to a map

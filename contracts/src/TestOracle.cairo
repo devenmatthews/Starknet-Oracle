@@ -24,8 +24,8 @@ end
 # constructor
 # --------------------------------------------------------
 
-@external
-func construct{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+@constructor
+func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     asset : felt, price : felt
 ):
     #write asset-price
@@ -44,7 +44,7 @@ func getAssetPrice{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr
-}(_asset : felt) -> (res: felt):
+}() -> (price: felt):
     let (price) = _price.read()
     return(price)
 end
