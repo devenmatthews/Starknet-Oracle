@@ -6,6 +6,15 @@ from starkware.starknet.common.syscalls import get_caller_address
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.registers import get_fp_and_pc
 
+
+#interface
+
+@contract_interface
+namespace IOracle:
+    func getAssetPrice() -> (price : felt):
+    end
+end
+
 # --------------------------------------------------------
 # storage variables
 # --------------------------------------------------------
@@ -52,8 +61,8 @@ end
 
 # TODO: Test constructor
 
-@constructor
-func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+@external
+func construct{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     pool_admin_address : felt, asset_listing_admin_address : felt, assets_len : felt, assets : felt*, sources_len : felt, sources : felt*
 ):
 
@@ -74,15 +83,30 @@ end
 
 # TODO: Test these functions
 
+#test
+#call Oracle contract
 #returns the price of an asset
 @view
 func getAssetPrice{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr
-}(_asset : felt) -> (res: felt):
-    let (price) = price_sources.read(asset=_asset)
+}(asset : felt) -> (res: felt):
+    let (source) = getAssetSource(_asset=asset)
+    let (price) = IOracle.getAssetPrice(
+        contract_address=source
+        )
     return(price)
+end
+
+@view
+func getAssetSource{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr
+}(_asset : felt) -> (source: felt):
+    let (source) = price_sources.read(asset=_asset)
+    return(source)
 end
 
 

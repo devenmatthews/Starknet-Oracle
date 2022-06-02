@@ -1,3 +1,17 @@
 node_modules
 package.json
 package-lock.json
+.env.example
+.eslintignore
+.eslintrc.js
+.npmignore
+.prettierignore
+.prettierrc
+.solhint.json
+.solhintignore
+hardhat.config.ts
+scripts/
+starknet-artifacts/
+test/
+tsconfig.json
+cache/
