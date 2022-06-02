@@ -110,9 +110,7 @@ describe("Aave Oracle test", async () => {
         oracleContract = await oracleContractFactory.deploy({
             pool_admin_address: BigInt(poolAdminAddress),
             asset_listing_admin_address: BigInt(assetListingAdminAddress),
-            //assets_len: BigInt(assets.length),
             assets: assets,
-            //sources_len: BigInt(sources.length),
             sources: sources
         });
         console.log("Oracle deployed at " + oracleContract.address);
@@ -137,7 +135,7 @@ describe("Aave Oracle test", async () => {
             BigInt(number.toBN(oracleTest1.address).toString()).toString()
         );
 
-    });
+    }).timeout(0);
 
 
     it("Test Get Price", async () => {
@@ -156,7 +154,7 @@ describe("Aave Oracle test", async () => {
             BigInt("2000").toString()
         );
 
-    });
+    }).timeout(0);
 
 
     it("Test Bad Add Asset", async () => {
@@ -164,7 +162,7 @@ describe("Aave Oracle test", async () => {
         console.log("Testing addAsset not Admin: add Asset 30")
 
         try {
-            let source = await oracleContract
+            await oracleContract
             .call("addAsset", {
             //asset: tokenTest1.address,
             asset: BigInt("30"),
@@ -175,6 +173,56 @@ describe("Aave Oracle test", async () => {
             expect(err.message);
           }
 
-    });
+    }).timeout(0);
+
+    it("Test Asset Listing Admin Add Asset", async () => {
+
+        console.log("Testing addAsset Admin: add Asset 30")
+        await assetListingAdminAccount.invoke(oracleContract, "addAsset", {
+            //asset: tokenTest1.address,
+            asset: BigInt("30"),
+            source: BigInt(oracleTest1.address)
+            })
+        
+
+        console.log("Check if new Asset 30 returns price 1000")
+        let price = await oracleContract
+            .call("getAssetPrice", {
+            //asset: tokenTest1.address,
+            asset: BigInt("30")
+            })
+            //.then((res) => res.price);
+
+        console.log("Got Asset 30 Price: Expecting source = 1000")
+        expect(price["price"].toString()).equal(
+            BigInt("1000").toString()
+        );
+
+    }).timeout(0);
+
+    it("Test Pool Admin Add Asset", async () => {
+
+        console.log("Testing addAsset Admin: add Asset 40")
+        await poolAdminAccount.invoke(oracleContract, "addAsset", {
+            //asset: tokenTest1.address,
+            asset: BigInt("40"),
+            source: BigInt(oracleTest1.address)
+            })
+        
+
+        console.log("Check if new Asset 40 returns price 1000")
+        let price = await oracleContract
+            .call("getAssetPrice", {
+            //asset: tokenTest1.address,
+            asset: BigInt("40")
+            })
+            //.then((res) => res.price);
+
+        console.log("Got Asset 40 Price: Expecting source = 1000")
+        expect(price["price"].toString()).equal(
+            BigInt("1000").toString()
+        );
+
+    }).timeout(0);
 
 });
