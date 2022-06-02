@@ -45,8 +45,8 @@ func AssetListingOrPoolAdmins{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, 
     let (caller_address) = get_caller_address()
     let (authorized_caller) = asset_listing_or_pool_admin.read(caller=caller_address)
     with_attr error_message(
-            "Caller must be AssetListing or PoolAdmin: Wanted: {authorized_caller} Got: {caller_address}."):
-        assert caller_address = (authorized_caller)
+            "Caller must be AssetListing or PoolAdmin."):
+        assert authorized_caller = 1
     end
     return ()
 end
@@ -69,8 +69,8 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     #write admins
     pool_admin.write(pool_admin_address)
     asset_listing_admin.write(asset_listing_admin_address)
-    asset_listing_or_pool_admin.write(pool_admin_address, pool_admin_address)
-    asset_listing_or_pool_admin.write(asset_listing_admin_address, asset_listing_admin_address)
+    asset_listing_or_pool_admin.write(asset_listing_admin_address, 1)#asset_listing_admin_address)
+    asset_listing_or_pool_admin.write(pool_admin_address, 1)#pool_admin_address)
     #construct price_sources
     _setAssetSources(assets_len = assets_len,
                     assets = assets,

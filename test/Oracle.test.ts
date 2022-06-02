@@ -175,31 +175,6 @@ describe("Aave Oracle test", async () => {
 
     }).timeout(0);
 
-    it("Test Asset Listing Admin Add Asset", async () => {
-
-        console.log("Testing addAsset Admin: add Asset 30")
-        await assetListingAdminAccount.invoke(oracleContract, "addAsset", {
-            //asset: tokenTest1.address,
-            asset: BigInt("30"),
-            source: BigInt(oracleTest1.address)
-            })
-        
-
-        console.log("Check if new Asset 30 returns price 1000")
-        let price = await oracleContract
-            .call("getAssetPrice", {
-            //asset: tokenTest1.address,
-            asset: BigInt("30")
-            })
-            //.then((res) => res.price);
-
-        console.log("Got Asset 30 Price: Expecting source = 1000")
-        expect(price["price"].toString()).equal(
-            BigInt("1000").toString()
-        );
-
-    }).timeout(0);
-
     it("Test Pool Admin Add Asset", async () => {
 
         console.log("Testing addAsset Admin: add Asset 40")
@@ -219,6 +194,31 @@ describe("Aave Oracle test", async () => {
             //.then((res) => res.price);
 
         console.log("Got Asset 40 Price: Expecting source = 1000")
+        expect(price["price"].toString()).equal(
+            BigInt("1000").toString()
+        );
+
+    }).timeout(0);
+
+    it("Test Asset Listing Admin Add Asset", async () => {
+
+        console.log("Testing addAsset Admin: add Asset 30")
+        await assetListingAdminAccount.invoke(oracleContract, "addAsset", {
+            //asset: tokenTest1.address,
+            asset: BigInt("30"),
+            source: BigInt(oracleTest1.address)
+            })
+        
+
+        console.log("Check if new Asset 30 returns price 1000")
+        let price = await oracleContract
+            .call("getAssetPrice", {
+            //asset: tokenTest1.address,
+            asset: BigInt("30")
+            })
+            //.then((res) => res.price);
+
+        console.log("Got Asset 30 Price: Expecting source = 1000")
         expect(price["price"].toString()).equal(
             BigInt("1000").toString()
         );
