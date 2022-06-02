@@ -12,6 +12,5 @@ package-lock.json
 hardhat.config.ts
 scripts/
 starknet-artifacts/
-test/
 tsconfig.json
 cache/
