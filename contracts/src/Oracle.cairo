@@ -9,7 +9,7 @@ from starkware.cairo.common.registers import get_fp_and_pc
 # --------------------------------------------------------
 #import interfaces
 # --------------------------------------------------------
-from lib.Interfaces.Interfaces import IOracle
+from lib.Interfaces.Interfaces import ITestOracle
 
 
 # --------------------------------------------------------
@@ -93,7 +93,10 @@ func getAssetPrice{
     range_check_ptr
 }(asset : felt) -> (price: felt):
     let (source) = getAssetSource(asset=asset)
-    let (price) = IOracle.getAssetPrice(
+    if source == 0x0:
+        return(0)
+    end
+    let (price) = ITestOracle.getAssetPrice(
         contract_address=source
         )
     return(price)
@@ -107,7 +110,10 @@ func getAssetSource{
     pedersen_ptr : HashBuiltin*,
     range_check_ptr
 }(asset : felt) -> (source: felt):
-    let (source) = price_sources.read(asset=asset)
+    with_attr error_message(
+            "Asset source does not exist."):
+        let (source) = price_sources.read(asset=asset)
+    end
     return(source)
 end
 

@@ -1,0 +1,18 @@
+["protostar.config"]
+protostar_version = "0.2.2"
+
+["protostar.project"]
+libs_path = "lib"
+
+# https://github.com/Shard-Labs/starknet-devnet
+[profile.devnet.protostar.deploy]
+gateway_url="http://127.0.0.1:5050/"
+
+["protostar.contracts"]
+Oracle = [
+    "contracts/src/Oracle.cairo",
+]
+
+TestOracle = [
+    "contracts/src/TestOracle.cairo",
+]

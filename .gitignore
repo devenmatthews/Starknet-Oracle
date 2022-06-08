@@ -14,3 +14,6 @@ scripts/
 starknet-artifacts/
 tsconfig.json
 cache/
+build/
+.venv/
+tests/fake_tests.cairo
