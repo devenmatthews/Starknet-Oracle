@@ -40,6 +40,22 @@ func test_get_price{syscall_ptr : felt*, range_check_ptr}():
 end
 
 @external
+func test_source_of_asset{syscall_ptr : felt*, range_check_ptr}():
+    alloc_locals
+
+    tempvar oracle_address : felt
+    %{ ids.oracle_address = context.oracle_address %}
+
+    tempvar asset_1_source : felt
+    %{ ids.asset_1_source = context.test_oracle_1_address %}
+
+    #Get Source of ASSET_1 = 100
+    let (res) = IAAVEOracle.getSourceOfAsset(contract_address = oracle_address, asset = 100)
+    assert res = asset_1_source
+    return()
+end
+
+@external
 func test_bad_get_asset{syscall_ptr : felt*, range_check_ptr}():
     alloc_locals
 

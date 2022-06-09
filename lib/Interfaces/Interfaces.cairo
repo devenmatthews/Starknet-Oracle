@@ -14,7 +14,7 @@ namespace IAAVEOracle:
     func getAssetPrice(asset : felt) -> (price : felt):
     end
 
-    func getAssetSource(asset : felt) -> (source: felt):
+    func getSourceOfAsset(asset : felt) -> (source: felt):
     end
 
     func setAssetSources(assets_len : felt, assets : felt*, sources_len : felt, sources: felt*):

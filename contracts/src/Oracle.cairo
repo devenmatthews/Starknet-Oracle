@@ -55,6 +55,11 @@ end
 # constructor
 # --------------------------------------------------------
 
+#Provider
+#fallback oracle
+#base prices
+#rename interfaces
+
 #Tested
 #Sets variables
 @constructor
@@ -84,6 +89,20 @@ end
 # getter methods
 # --------------------------------------------------------
 
+
+# if (asset == BASE_CURRENCY) {
+#       return BASE_CURRENCY_UNIT;
+#     } else if (address(source) == address(0)) {
+#       return _fallbackOracle.getAssetPrice(asset);
+#     } else {
+#       int256 price = source.latestAnswer();
+#       if (price > 0) {
+#         return uint256(price);
+#       } else {
+#         return _fallbackOracle.getAssetPrice(asset);
+#       }
+
+
 #Tested
 #calls oracle to return price of asset
 @view
@@ -92,7 +111,7 @@ func getAssetPrice{
     pedersen_ptr : HashBuiltin*,
     range_check_ptr
 }(asset : felt) -> (price: felt):
-    let (source) = getAssetSource(asset=asset)
+    let (source) = getSourceOfAsset(asset=asset)
     if source == 0x0:
         return(0)
     end
@@ -102,10 +121,13 @@ func getAssetPrice{
     return(price)
 end
 
+#getAssetsPrices
+
+#Rename getSourceOfAsset
 #Tested
 #returns price source for a single asset
 @view
-func getAssetSource{
+func getSourceOfAsset{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr
@@ -117,6 +139,7 @@ func getAssetSource{
     return(source)
 end
 
+#getFallbackOracle
 
 # --------------------------------------------------------
 # external setter methods
@@ -132,9 +155,8 @@ _setAssetSources(assets_len = assets_len, assets = assets, sources_len = sources
 return()
 end
 
-### TODO: Test these functions
-#Must be from AssetListing or Pool Admin
-#add asset external
+## Tested
+# add asset external
 @external
 func addAsset{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
 asset : felt, source : felt):
@@ -143,6 +165,8 @@ asset : felt, source : felt):
     return () 
 end
 
+#setFallbackOracle
+
 
 
 
@@ -150,8 +174,8 @@ end
 # internal setter methods
 # --------------------------------------------------------
 
-#Tested
-#populates price_sources with key-pair values asset:price_source
+# Tested
+## populates price_sources with key-pair values asset:price_source
 func _setAssetSources{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
 assets_len : felt, assets : felt*, sources_len : felt, sources : felt*
 ):
@@ -179,12 +203,14 @@ assets_len : felt, assets : felt*, sources_len : felt, sources : felt*
 
 end
 
-#Tested
-#adds single asset to price_sources
+# Tested
+## adds single asset to price_sources
 func _addAsset{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
 asset : felt, source : felt):
     #how do you write to a map
     price_sources.write(asset, source)
     return()
 end
+
+#_setFallbackOracle
 
